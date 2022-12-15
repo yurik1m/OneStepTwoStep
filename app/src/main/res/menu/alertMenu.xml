@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/on"
+        android:title="알림 ON" />
+    <item
+        android:id="@+id/off"
+        android:title="알림 OFF" />
+</menu>

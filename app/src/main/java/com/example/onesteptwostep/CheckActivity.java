@@ -59,7 +59,7 @@ public class CheckActivity extends AppCompatActivity {
         checknum=0;
         if (((CheckBox)v).isChecked()) {
             checknum++;
-            if(v.getId() == R.id.cb6) et.isFocusableInTouchMode();
+            if(v.getId() == R.id.cb6) et.setFocusableInTouchMode(true);
         }
         else checknum--;
 
