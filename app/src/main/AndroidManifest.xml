@@ -29,6 +29,10 @@
             android:name=".MemoActivity">
         </activity>
         <activity android:name=".CheckActivity"></activity>
+
+        <receiver android:name=".AlamReceiver" />
     </application>
+
+
 
 </manifest>

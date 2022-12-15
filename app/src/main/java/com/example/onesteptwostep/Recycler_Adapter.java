@@ -54,11 +54,11 @@ public class Recycler_Adapter extends RecyclerView.Adapter<Recycler_Adapter.view
     @Override
     public void onBindViewHolder(@NonNull viewHolder holder, int position) {
         holder.day.setText(data[position]);
-
+        setthumb(holder, num[position]);
+        setMemo(holder, memo[position]);
     }
 
-    public void onBind(@NonNull viewHolder holder, boolean checkplus, int checknum){
-        if (checkplus == true){
+    public void setthumb(@NonNull viewHolder holder, int checknum){
             holder.thumblay.setVisibility(View.VISIBLE);
             if(checknum >=5){
                 holder.thumb1.setImageResource(R.drawable.thumb_full);
@@ -69,11 +69,12 @@ public class Recycler_Adapter extends RecyclerView.Adapter<Recycler_Adapter.view
                 holder.thumb1.setImageResource(R.drawable.thumb_full);
                 holder.thumb2.setImageResource(R.drawable.thumb_full);
             }
-            else holder.thumb1.setImageResource(R.drawable.thumb_full);
-        }
+            else if(checknum >=0) holder.thumb1.setImageResource(R.drawable.thumb_full);
+            else holder.thumblay.setVisibility(View.INVISIBLE);
+
     }
 
-    public void onBind(@NonNull viewHolder holder, boolean memoplus){
+    public void setMemo(@NonNull viewHolder holder, boolean memoplus){
         if(memoplus == true) holder.memoyes.setVisibility(View.VISIBLE);
     }
 

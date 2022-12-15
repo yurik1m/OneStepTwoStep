@@ -9,6 +9,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -22,7 +23,9 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -32,34 +35,41 @@ import java.util.GregorianCalendar;
 //메인 액티비티(달력)
 public class MainActivity extends AppCompatActivity {
     private String[] TempCal = new String[42];
-    private boolean[] savememo = new boolean[42];
-    private int[] checknum = new int[42];
+    private boolean savememo[] = new boolean[42];
+    private int checknum[] = new int[42];
+    private boolean daily;
     GregorianCalendar calendar;
 
     //알림
-    String NOTIFICATION_CHANNEL_ID = "my_channel";
 
-    private void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT>= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setDescription("Channel description");
-            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
 
-        }
-    }
-
-    public void sendNotification(View view){
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+    public void sendAlerm(){
 
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,0);
+        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        notificationBuilder.setSmallIcon(R.drawable.calendaricon);
-        notificationBuilder.setContentTitle("Go Step!");
-        notificationBuilder.setContentText("오늘의 그린 발자국을 남겨주세요!");
-
+        if(daily){
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                int hour=20;
+                int minute=0;
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Calendar.HOUR_OF_DAY, hour);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),  AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+        }
     }
+
+    protected void initArray(){
+        for(int i=0; i< savememo.length; i++){
+            savememo[i]=false;
+            checknum[i]=-1;
+        }
+    }
+
 
     //+버튼 눌렀을 때 뜨는 팝업메뉴
     @Override
@@ -67,7 +77,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+        initArray();
 
+        Switch notibtn = findViewById(R.id.notibtn);
+        notibtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                boolean on = ((Switch)view).isChecked();
+                if(on) {
+                    daily = true;
+                    Toast.makeText(getApplicationContext(),"알림이 켜졌습니다.",Toast.LENGTH_LONG).show();
+                }
+                else{
+                    daily=false;
+                    Toast.makeText(getApplicationContext(),"알림이 해제되었습니다.",Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
 
         Button plusbtn = findViewById(R.id.plusbtn);
@@ -103,11 +129,20 @@ public class MainActivity extends AppCompatActivity {
                 public void onActivityResult(ActivityResult result) {
                     if(result.getResultCode() == RESULT_OK) {
                         Intent intent = result.getData();
-                        boolean result1 = intent.getBooleanExtra("save",true);
-                        int checknum = intent.getIntExtra("checknum",0);
-//                        if(result1){
-//
-//                        }
+                        boolean result1 = intent.getBooleanExtra("save",false);
+                        int num = intent.getIntExtra("checknum",0);
+                        Date date = new Date();
+                        SimpleDateFormat sd = new SimpleDateFormat("dd");
+                        String todaydate = sd.format(date);
+                        int day=0;
+                        for(int i=0; i<TempCal.length; i++){
+                            if(todaydate.equals(TempCal[i])) day=i;
+                        }
+                        if(result1){
+                            savememo[day] = true;
+                        }
+                        checknum[day] = num;
+                        RecyclerViewCreate();
                     }
                 }
             });
@@ -137,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
         }
         Calsetting(calendar);
         yearmon.setText(calendar.get(Calendar.YEAR) + "." + (calendar.get(Calendar.MONTH)+1));
+        initArray();
 
 
     }
@@ -144,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
     protected void RecyclerViewCreate() {
         RecyclerView calendarView = findViewById(R.id.calendarRecyclerView);
         Recycler_Adapter calendarAdapter = new Recycler_Adapter(getApplicationContext(), TempCal, savememo, checknum);
-
         GridLayoutManager layoutManager = new GridLayoutManager(getApplicationContext(), 7);
         calendarView.setLayoutManager(layoutManager);
         calendarView.setAdapter(calendarAdapter);
