@@ -28,6 +28,7 @@
         <activity
             android:name=".MemoActivity">
         </activity>
+        <activity android:name=".CheckActivity"></activity>
     </application>
 
 </manifest>

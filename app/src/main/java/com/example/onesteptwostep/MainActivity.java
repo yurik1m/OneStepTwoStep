@@ -129,13 +129,10 @@ public class MainActivity extends AppCompatActivity {
        for (int i = 0; i < TempCal.length; i++) {
             if (i >=week && i<=(week+max)) {
                 TempCal[i] = Integer.toString(i - week + 1);
-           } else { // 이번달 일수
+           } else {
                TempCal[i]="";
            }
        }
-
-
-
         RecyclerViewCreate();
         }
 

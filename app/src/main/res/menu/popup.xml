@@ -3,8 +3,8 @@
 
     <item
         android:id="@+id/pluscheck"
-        android:title="search" />
+        android:title="STEP" />
     <item
         android:id="@+id/plusmemo"
-        android:title="add" />
+        android:title="MEMO" />
 </menu>

@@ -31,6 +31,7 @@ public class MemoActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("save",true);
                 setResult(RESULT_OK,intent);
+                finish();
             }
         });
 
